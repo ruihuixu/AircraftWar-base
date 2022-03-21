@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class HeroAircraft extends AbstractAircraft {
 
-    /**攻击方式 */
+    ///**攻击方式 */
 
     /**
      * 子弹一次发射数量
@@ -38,6 +38,7 @@ public class HeroAircraft extends AbstractAircraft {
      */
     public HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
+        this.kind = 0;
     }
 
     @Override

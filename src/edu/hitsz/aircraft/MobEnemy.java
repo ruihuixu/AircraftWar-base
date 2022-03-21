@@ -16,6 +16,7 @@ public class MobEnemy extends AbstractAircraft {
 
     public MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
+        this.kind = 1;
     }
 
     @Override
@@ -26,6 +27,7 @@ public class MobEnemy extends AbstractAircraft {
             vanish();
         }
     }
+
 
     @Override
     public List<BaseBullet> shoot() {

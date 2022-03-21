@@ -29,10 +29,12 @@ abstract class AbstractAircraft
 {
 	# maxHp:int
     # hp:int
+    # kind:int
     + AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp):void
     + decreaseHp(int decrease):void
     + getHp():int
-    + {abstract} shoot():List<Bullet>
+    + {abstract} shoot():List<BaseBullet>
+    + {abstract} addProp():List<AbstractProp>
  }
 
 class BaseBullet
@@ -45,8 +47,9 @@ class BaseBullet
 
 abstract class AbstractProp
 {
+    - propkind
     + AbstractProp(int locationX, int locationY, int speedX, int speedY):void
-    + forward():void
+    + getPropkind():int
 }
 
 AbstractFlyingObject <|-- AbstractAircraft
@@ -71,13 +74,14 @@ class HeroAircraft {
     - direction:int
     + HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp):void
     + forward():void
-    + shoot():List<Bullet>
+    + shoot():List<BaseBullet>
 }
 
 class MobEnemy {
     + MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp):void
     + forward():void
-    + shoot():List<Bullet>
+    + enemyKind():int
+    + shoot():List<BaseBullet>
 }
 
 class EliteEnemy {
@@ -86,7 +90,9 @@ class EliteEnemy {
     - direction:int
     + EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp):void
     + forward():void
-    + shoot():List<Bullet>
+    + enemyKind():int
+    + shoot():List<BaseBullet>
+    + addProp():List<AbstractProp>
 }
 
 class BossEnemy {
@@ -95,6 +101,7 @@ class BossEnemy {
     - direction:int
     + BossEnemy(int locationX, int locationY, int speedX, int speedY, int hp):void
     + forward():void
+    + enemyKind():int
     + shoot():List<Bullet>
 }
 
@@ -109,14 +116,17 @@ class EnemyBullet {
 }
 
 class FireProp {
+    - propkind
     + FireTool(int locationX, int locationY, int speedX, int speedY):void
 }
 
 class BloodProp {
+    - propkind
     + BloodTool(int locationX, int locationY, int speedX, int speedY):void
 }
 
 class BombProp {
+   - propkind
    + BombProp(int locationX, int locationY, int speedX, int speedY):void
 }
 @enduml

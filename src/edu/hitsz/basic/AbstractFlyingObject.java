@@ -153,6 +153,7 @@ public abstract class AbstractFlyingObject {
         }
         return height;
     }
+
     public boolean notValid() {
         return !this.isValid;
     }

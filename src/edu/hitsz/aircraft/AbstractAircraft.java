@@ -2,6 +2,10 @@ package edu.hitsz.aircraft;
 
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
+import prop.AbstractProp;
+import prop.BloodProp;
+import prop.BombProp;
+import prop.FireProp;
 
 import java.util.List;
 
@@ -17,6 +21,7 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
      */
     protected int maxHp;
     protected int hp;
+    protected  int kind;
 
     public AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY);
@@ -32,11 +37,18 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         }
     }
 
+    public void increaseHp(int increase){
+        hp += increase;
+        if(hp>=maxHp){
+            hp = maxHp;
+        }
+    }
+
     public int getHp() {
         return hp;
     }
 
-
+    public int getKind(){return kind;}
     /**
      * 飞机射击方法，可射击对象必须实现
      * @return
@@ -45,6 +57,25 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
      */
     public abstract List<BaseBullet> shoot();
 
+    /**
+     * 飞机产生道具方法，精英敌机、Boss敌机实现
+     * @return
+     * 返回道具
+     */
+    public AbstractProp addProp(){
+        int x = this.getLocationX();
+        int y = this.getLocationY();
+        AbstractProp abstractProp;
+        double r = Math.random();
+        if(r<0.4){
+            abstractProp = new BloodProp(x,y,0,0);
+        }else if(r>0.8){
+            abstractProp = new BombProp(x,y,0,0);
+        }else{
+            abstractProp = new FireProp(x,y,0,0);
+        }
+        return abstractProp;
+    }
 }
 
 
