@@ -11,30 +11,6 @@ interface PropFactory {
     + create(int x,int y):AbstractProp
 }
 
-abstract class AbstractFlyingObject
-{
-    # locationX:int
-    # locationY:int
-    # speedX:int
-    # speedY:int
-    # image:BufferedImage
-    # width:int
-    # height:int
-    # isValid:boolean
-
-    + AbstractFlyingObject(int locationX, int locationY, int speedX, int speedY):void
-    + forward():void
-    + crash(AbstractFlyingObject flyingObject):boolean
-    + setLocation(double locationX, double locationY):void
-    + getLocationX():int
-    + getLocationY():int
-    + getSpeedY():int
-    + getImage():BufferedImage
-    + getWidth():int
-    + getHeight():int
-    + notValid():boolean
-    + vanish():void
-}
 abstract class AbstractAircraft
 {
 	# maxHp:int
@@ -44,14 +20,6 @@ abstract class AbstractAircraft
     + decreaseHp(int decrease):void
     + getHp():int
     + {abstract} shoot():List<BaseBullet>
-}
-
-class BaseBullet
-{
-    - power:int
-    + BaseBullet(int locationX, int locationY, int speedX, int speedY, int power):void
-    + forward():void
-	+ getPower():int
 }
 
 abstract class AbstractProp
@@ -80,21 +48,13 @@ BloodFactory ..> BloodProp:create
 FireFactory ..> FireProp:create
 BombFactory ..> BombProp:create
 
-AbstractFlyingObject <|-- AbstractAircraft
-AbstractFlyingObject <|-- BaseBullet
-AbstractFlyingObject <|-- AbstractProp
-
-AbstractAircraft <|-- HeroAircraft
 AbstractAircraft <|-- MobEnemy
 AbstractAircraft <|-- EliteEnemy
 AbstractAircraft <|-- BossEnemy
 
-BaseBullet <|-- HeroBullet
-BaseBullet <|-- EnemyBullet
-
-AbstractProp <|-- FireProp
 AbstractProp <|-- BloodProp
 AbstractProp <|-- BombProp
+AbstractProp <|-- FireProp
 
 class EliteFactory {
     + create():EliteEnemy
@@ -118,18 +78,6 @@ class FireFactory {
 
 class BombFactory {
     + create(int x,int y):BombProp
-}
-
-class HeroAircraft {
-     - {static} heroAircraft:HeroAircraft
-     - shootNum:int
-     - power:int
-     - direction:int
-     - kind:int
-     + {static} getInstance():HeroAircraft
-     - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp):void
-     + forward():void
-     + shoot():List<BaseBullet>
 }
 
 class MobEnemy {
@@ -159,16 +107,6 @@ class BossEnemy {
     + forward():void
     + enemyKind():int
     + shoot():List<Bullet>
-}
-
-class HeroBullet {
-    + HeroBullet(int locationX, int locationY,
-     int speedX, int speedY, int power):void
-}
-
-class EnemyBullet {
-    + EnemyBullet(int locationX, int locationY,
-     int speedX, int speedY, int power):void
 }
 
 class FireProp {

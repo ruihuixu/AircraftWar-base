@@ -3,9 +3,12 @@ package edu.hitsz.application;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
+import factory.*;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import prop.AbstractProp;
 import prop.BloodProp;
+import prop.BombProp;
+import prop.FireProp;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,12 +59,14 @@ public class Game extends JPanel {
      */
     Random ran = new Random();
 
-    public Game() {
-        heroAircraft = new HeroAircraft(
-                Main.WINDOW_WIDTH / 2,
-                Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight() ,
-                0, 0, 100);
+    /**
+     * 建立工厂
+     */
+    private EnemyFactory enemyFactory;
+    private PropFactory propFactory;
 
+    public Game() {
+        heroAircraft = HeroAircraft.getInstance();
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
@@ -97,23 +102,12 @@ public class Game extends JPanel {
                 int ran1 = ran.nextInt(4);
                 if (enemyAircrafts.size()< enemyMaxNumber) {
                     if(ran1!=1){
-                        enemyAircrafts.add(new MobEnemy(
-                                (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
-                                0,
-                                10,
-                                30
-                        ));
+                        enemyFactory = new MobFactory();
+                        enemyAircrafts.add(enemyFactory.create());
                     }else{
-                        enemyAircrafts.add(new EliteEnemy(
-                                (int)( Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth()))*1,
-                                (int)(Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
-                                0,
-                                5,
-                                30
-                        ));
+                        enemyFactory = new EliteFactory();
+                        enemyAircrafts.add(enemyFactory.create());
                     }
-
                 }
                 // 飞机射出子弹
                 shootAction();
@@ -227,14 +221,26 @@ public class Game extends JPanel {
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
-                        //击落精英机获得20分，普通敌机获得10分
+                        // 击落精英机获得20分，普通敌机获得10分
                         score += 10;
                         if(enemyAircraft.getKind()==2){
                             score += 10;
                             //有一定概率产生道具
-                            //if(Math.random()<0.8){
-                                props.add(enemyAircraft.addProp());
-                            //}
+                            if(Math.random()<0.5){
+                                int x = enemyAircraft.getLocationX();
+                                int y = enemyAircraft.getLocationY();
+                                double r = Math.random();
+                                if(r<0.45){
+                                    propFactory = new BloodFactory();
+                                    props.add(propFactory.create(x,y));
+                                }else if(r>0.7){
+                                    propFactory = new FireFactory();
+                                    props.add(propFactory.create(x,y));
+                                }else{
+                                    propFactory = new BombFactory();
+                                    props.add(propFactory.create(x,y));
+                                }
+                            }
                         }
                     }
                 }
