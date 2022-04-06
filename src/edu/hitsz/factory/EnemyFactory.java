@@ -1,7 +1,13 @@
-package factory;
+package edu.hitsz.factory;
 
 import edu.hitsz.aircraft.AbstractAircraft;
-
+/**
+ * @author xu
+ */
 public interface EnemyFactory {
+    /**
+     * 抽象方法
+     * @return 敌机
+     */
     AbstractAircraft create();
 }

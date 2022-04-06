@@ -7,10 +7,6 @@ interface EnemyFactory {
     + create():AbstractAircraft
 }
 
-interface PropFactory {
-    + create(int x,int y):AbstractProp
-}
-
 abstract class AbstractAircraft
 {
 	# maxHp:int
@@ -22,17 +18,8 @@ abstract class AbstractAircraft
     + {abstract} shoot():List<BaseBullet>
 }
 
-abstract class AbstractProp
-{
-    - propkind
-    + AbstractProp(int locationX, int locationY, int speedX, int speedY):void
-    + getPropkind():int
-}
-
 Game ..> EnemyFactory
-Game ..> PropFactory
 Game ..> AbstractAircraft
-Game ..> AbstractProp
 
 EnemyFactory <.. EliteFactory
 EnemyFactory <.. MobFactory
@@ -41,20 +28,10 @@ EliteFactory ..> EliteEnemy:create
 MobFactory ..> MobEnemy:create
 BossFactory ..> BossEnemy:create
 
-PropFactory <|.. BloodFactory
-PropFactory <|.. BombFactory
-PropFactory <|.. FireFactory
-BloodFactory ..> BloodProp:create
-FireFactory ..> FireProp:create
-BombFactory ..> BombProp:create
 
 AbstractAircraft <|-- MobEnemy
 AbstractAircraft <|-- EliteEnemy
 AbstractAircraft <|-- BossEnemy
-
-AbstractProp <|-- BloodProp
-AbstractProp <|-- BombProp
-AbstractProp <|-- FireProp
 
 class EliteFactory {
     + create():EliteEnemy
@@ -66,18 +43,6 @@ class MobFactory {
 
 class BossFactory {
     + create():BossEnemy
-}
-
-class BloodFactory {
-    + create(int x,int y):BloodProp
-}
-
-class FireFactory {
-    + create(int x,int y):FireProp
-}
-
-class BombFactory {
-    + create(int x,int y):BombProp
 }
 
 class MobEnemy {
@@ -109,18 +74,5 @@ class BossEnemy {
     + shoot():List<Bullet>
 }
 
-class FireProp {
-    - propkind
-    + FireTool(int locationX, int locationY, int speedX, int speedY):void
-}
 
-class BloodProp {
-    - propkind
-    + BloodTool(int locationX, int locationY, int speedX, int speedY):void
-}
-
-class BombProp {
-   - propkind
-   + BombProp(int locationX, int locationY, int speedX, int speedY):void
-}
 @enduml

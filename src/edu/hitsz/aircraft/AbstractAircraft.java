@@ -2,10 +2,6 @@ package edu.hitsz.aircraft;
 
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
-import prop.AbstractProp;
-import prop.BloodProp;
-import prop.BombProp;
-import prop.FireProp;
 
 import java.util.List;
 
@@ -21,6 +17,9 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
      */
     protected int maxHp;
     protected int hp;
+    /**
+     * 飞机类型，1--普通敌机，2--精英敌机，3--boss敌机，0--英雄机
+     */
     protected  int kind;
 
     public AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {

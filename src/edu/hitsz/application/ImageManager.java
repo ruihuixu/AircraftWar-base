@@ -4,12 +4,11 @@ package edu.hitsz.application;
 import edu.hitsz.aircraft.EliteEnemy;
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.aircraft.MobEnemy;
-import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.EnemyBullet;
 import edu.hitsz.bullet.HeroBullet;
-import prop.BloodProp;
-import prop.BombProp;
-import prop.FireProp;
+import edu.hitsz.prop.BloodProp;
+import edu.hitsz.prop.BombProp;
+import edu.hitsz.prop.FireProp;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

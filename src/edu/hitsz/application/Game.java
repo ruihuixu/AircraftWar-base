@@ -3,12 +3,9 @@ package edu.hitsz.application;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
-import factory.*;
+import edu.hitsz.factory.*;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import prop.AbstractProp;
-import prop.BloodProp;
-import prop.BombProp;
-import prop.FireProp;
+import edu.hitsz.prop.AbstractProp;
 
 import javax.swing.*;
 import java.awt.*;
@@ -119,6 +116,9 @@ public class Game extends JPanel {
             // 飞机移动
             aircraftsMoveAction();
 
+            //道具移动
+            propsMoveAction();
+
             // 撞击检测
             crashCheckAction();
 
@@ -185,6 +185,11 @@ public class Game extends JPanel {
         }
     }
 
+    private void propsMoveAction(){
+        for(AbstractProp temp:props){
+            temp.forward();
+        }
+    }
 
     /**
      * 碰撞检测：
@@ -201,6 +206,7 @@ public class Game extends JPanel {
             if(bullet.crash(heroAircraft)) {
                 //英雄机损失一定生命值
                 heroAircraft.decreaseHp(bullet.getPower());
+                bullet.vanish();
             }
         }
         // 英雄子弹攻击敌机
