@@ -34,7 +34,7 @@ public class Game extends JPanel {
     private int timeInterval = 40;
 
     private final HeroAircraft heroAircraft;
-    private final List<AbstractAircraft> enemyAircrafts;
+    private final List<AbstractEnemy> enemyAircrafts;
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
     private final List<AbstractProp> props;
@@ -52,15 +52,17 @@ public class Game extends JPanel {
     private int cycleTime = 0;
 
     /**
-     * 产生随机数，指示精英敌机的产生
+     * 产生随机数，指示精英敌机的产生;flag、limit指示Boss机产生
      */
     Random ran = new Random();
+    private int last = 0;
+    private boolean flag = false;
+    private int limit = 50;
 
     /**
      * 建立工厂
      */
     private EnemyFactory enemyFactory;
-    private PropFactory propFactory;
 
     public Game() {
         heroAircraft = HeroAircraft.getInstance();
@@ -68,7 +70,6 @@ public class Game extends JPanel {
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
         props = new LinkedList<>();
-
         /**
          * Scheduled 线程池，用于定时任务调度
          * 关于alibaba code guide：可命名的 ThreadFactory 一般需要第三方包
@@ -96,8 +97,13 @@ public class Game extends JPanel {
             if (timeCountAndNewCycleJudge()) {
                 System.out.println(time);
                 // 新敌机产生
-                int ran1 = ran.nextInt(4);
                 if (enemyAircrafts.size()< enemyMaxNumber) {
+                    if(score!=0&&score%limit==0&&!flag){
+                        enemyFactory = new BossFactory();
+                        enemyAircrafts.add(enemyFactory.create());
+                        flag = true;
+                    }
+                    int ran1 = ran.nextInt(4);
                     if(ran1!=1){
                         enemyFactory = new MobFactory();
                         enemyAircrafts.add(enemyFactory.create());
@@ -163,11 +169,11 @@ public class Game extends JPanel {
 
     private void shootAction() {
         // TODO 敌机射击
-        for(AbstractAircraft example:enemyAircrafts) {
-            enemyBullets.addAll(example.shoot());
+        for(AbstractEnemy example:enemyAircrafts) {
+            enemyBullets.addAll(example.shoot(example));
         }
         // 英雄射击
-        heroBullets.addAll(heroAircraft.shoot());
+        heroBullets.addAll(heroAircraft.shoot(heroAircraft));
     }
 
     private void bulletsMoveAction() {
@@ -180,7 +186,7 @@ public class Game extends JPanel {
     }
 
     private void aircraftsMoveAction() {
-        for (AbstractAircraft enemyAircraft : enemyAircrafts) {
+        for (AbstractEnemy enemyAircraft : enemyAircrafts) {
             enemyAircraft.forward();
         }
     }
@@ -214,7 +220,7 @@ public class Game extends JPanel {
             if (bullet.notValid()) {
                 continue;
             }
-            for (AbstractAircraft enemyAircraft : enemyAircrafts) {
+            for (AbstractEnemy enemyAircraft : enemyAircrafts) {
                 if (enemyAircraft.notValid()) {
                     // 已被其他子弹击毁的敌机，不再检测
                     // 避免多个子弹重复击毁同一敌机的判定
@@ -227,26 +233,10 @@ public class Game extends JPanel {
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
-                        // 击落精英机获得20分，普通敌机获得10分
                         score += 10;
-                        if(enemyAircraft.getKind()==2){
-                            score += 10;
-                            //有一定概率产生道具
-                            if(Math.random()<0.5){
-                                int x = enemyAircraft.getLocationX();
-                                int y = enemyAircraft.getLocationY();
-                                double r = Math.random();
-                                if(r<0.45){
-                                    propFactory = new BloodFactory();
-                                    props.add(propFactory.create(x,y));
-                                }else if(r>0.7){
-                                    propFactory = new FireFactory();
-                                    props.add(propFactory.create(x,y));
-                                }else{
-                                    propFactory = new BombFactory();
-                                    props.add(propFactory.create(x,y));
-                                }
-                            }
+                        props.addAll(enemyAircraft.addProp(enemyAircraft));
+                        if(enemyAircraft.getKind()==3){
+                            flag = false;
                         }
                     }
                 }
@@ -265,13 +255,7 @@ public class Game extends JPanel {
             }
             if(heroAircraft.crash(temp)){
                 temp.vanish();
-                if(temp.getPropkind()==1){
-                    heroAircraft.increaseHp(30);
-                }else if(temp.getPropkind()==2){
-                    System.out.println("BombSupply active!");
-                }else{
-                    System.out.println("FireSupply active!");
-                }
+                temp.work(heroAircraft);
             }
         }
     }

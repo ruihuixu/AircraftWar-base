@@ -18,6 +18,18 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
     protected int maxHp;
     protected int hp;
     /**
+     * 子弹射击方向 (向上发射：1，向下发射：-1)
+     */
+    protected int direction;
+    /**
+     * 子弹一次发射数量
+     */
+    protected int shootNum;
+    /**
+     * 子弹伤害
+     */
+    protected int power;
+    /**
      * 飞机类型，1--普通敌机，2--精英敌机，3--boss敌机，0--英雄机
      */
     protected  int kind;
@@ -46,15 +58,19 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
     public int getHp() {
         return hp;
     }
-
+    public int getShootnum(){return shootNum;}
+    public int getDirection(){return direction;}
+    public int getPower(){return power;}
     public int getKind(){return kind;}
+
+    public void setShootnum(int shootNum){this.shootNum = shootNum;}
+
     /**
-     * 飞机射击方法，可射击对象必须实现
-     * @return
-     *  可射击对象需实现，返回子弹
-     *  非可射击对象空实现，返回null
+     * 射击方法
+     * @param aircraft
+     * @return 子弹列
      */
-    public abstract List<BaseBullet> shoot();
+    public abstract List<BaseBullet> shoot(AbstractAircraft aircraft);
 
 }
 

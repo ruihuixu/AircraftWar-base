@@ -1,5 +1,7 @@
 package edu.hitsz.aircraft;
 
+import edu.hitsz.application.ImageManager;
+import edu.hitsz.application.Main;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +37,12 @@ class EliteEnemyTest {
     void crash() {
         System.out.println("**--- Test crash method executed ---**");
         HeroAircraft heroAircraft = HeroAircraft.getInstance();
-        assertFalse(eliteEnemy.crash(heroAircraft));
+        eliteEnemy = new EliteEnemy(Main.WINDOW_WIDTH / 2,
+                Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight() ,
+                0,
+                0,
+                100);
+        assertTrue(eliteEnemy.crash(heroAircraft));
     }
 
     @Test
