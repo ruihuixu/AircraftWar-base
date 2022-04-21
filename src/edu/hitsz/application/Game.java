@@ -1,5 +1,7 @@
 package edu.hitsz.application;
 
+import dao.Record;
+import dao.RecordDaoImpl;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
@@ -10,6 +12,8 @@ import edu.hitsz.prop.AbstractProp;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -55,8 +59,7 @@ public class Game extends JPanel {
      * 产生随机数，指示精英敌机的产生;flag、limit指示Boss机产生
      */
     Random ran = new Random();
-    private int last = 0;
-    private boolean flag = false;
+    private boolean bossFlag = false;
     private int limit = 50;
 
     /**
@@ -97,12 +100,12 @@ public class Game extends JPanel {
             if (timeCountAndNewCycleJudge()) {
                 System.out.println(time);
                 // 新敌机产生
+                if(score!=0&&score%limit==0&&!bossFlag){
+                    enemyFactory = new BossFactory();
+                    enemyAircrafts.add(enemyFactory.create());
+                    bossFlag = true;
+                }
                 if (enemyAircrafts.size()< enemyMaxNumber) {
-                    if(score!=0&&score%limit==0&&!flag){
-                        enemyFactory = new BossFactory();
-                        enemyAircrafts.add(enemyFactory.create());
-                        flag = true;
-                    }
                     int ran1 = ran.nextInt(4);
                     if(ran1!=1){
                         enemyFactory = new MobFactory();
@@ -139,6 +142,14 @@ public class Game extends JPanel {
                 // 游戏结束
                 executorService.shutdown();
                 gameOverFlag = true;
+                //打印排行榜
+                try {
+                    paintScoreRank();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("Game Over!");
             }
 
@@ -236,7 +247,7 @@ public class Game extends JPanel {
                         score += 10;
                         props.addAll(enemyAircraft.addProp(enemyAircraft));
                         if(enemyAircraft.getKind()==3){
-                            flag = false;
+                            bossFlag = false;
                         }
                     }
                 }
@@ -336,5 +347,33 @@ public class Game extends JPanel {
         g.drawString("LIFE:" + this.heroAircraft.getHp(), x, y);
     }
 
+    /**
+     * 画出得分排行榜
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void paintScoreRank() throws IOException, ClassNotFoundException {
+        RecordDaoImpl recordDao = new RecordDaoImpl();
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd :hh:mm:ss");
+        Record record = new Record(dateFormat.format(date),this.score);
+        recordDao.read();
+        recordDao.doAdd(record);
+        recordDao.store();
+        recordDao.ranking();
+        String recordName;
+        String recordTime;
+        int recordScore;
+        System.out.println("***********************\n" +
+                "          得分排行榜         \n" +
+                "************************");
+        for(int i=0;i<recordDao.getAllRecords().size();i++){
+            int j = i + 1;
+            recordName = recordDao.getAllRecords().get(i).getName();
+            recordTime = recordDao.getAllRecords().get(i).getTime();
+            recordScore = recordDao.getAllRecords().get(i).getScore();
+            System.out.println("第"+j+"名"+": "+recordName+"，"+recordScore+"，"+recordTime);
+        }
+    }
 
 }
