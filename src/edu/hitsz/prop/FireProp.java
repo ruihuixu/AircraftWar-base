@@ -1,6 +1,8 @@
 package edu.hitsz.prop;
 
 import edu.hitsz.aircraft.HeroAircraft;
+import edu.hitsz.application.Main;
+import edu.hitsz.application.MusicThread;
 import strategy.ScatterShoot;
 
 /**
@@ -15,6 +17,9 @@ public class FireProp extends AbstractProp{
     @Override
     public void work(HeroAircraft heroAircraft) {
         System.out.println("FireSupply active!");
+        if(Main.soundEffect){
+            new MusicThread("src/videos/bullet.wav").start();
+        }
         heroAircraft.setShootnum(3);
         heroAircraft.setStrategy(new ScatterShoot());
     }

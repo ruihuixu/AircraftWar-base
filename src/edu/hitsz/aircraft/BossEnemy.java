@@ -1,8 +1,7 @@
 package edu.hitsz.aircraft;
 
-import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
-import edu.hitsz.bullet.EnemyBullet;
+import edu.hitsz.application.Main;
 import edu.hitsz.prop.AbstractProp;
 import strategy.ScatterShoot;
 import strategy.ShootContext;

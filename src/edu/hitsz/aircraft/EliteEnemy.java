@@ -1,8 +1,7 @@
 package edu.hitsz.aircraft;
 
-import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
-import edu.hitsz.bullet.EnemyBullet;
+import edu.hitsz.application.Main;
 import edu.hitsz.factory.BloodFactory;
 import edu.hitsz.factory.BombFactory;
 import edu.hitsz.factory.FireFactory;
@@ -34,14 +33,15 @@ public class EliteEnemy extends AbstractEnemy {
     public List<AbstractProp> addProp(AbstractEnemy abstractEnemy) {
         List<AbstractProp> res = new LinkedList<>();
         PropFactory propFactory;
-        if(Math.random()<0.9){
+        double[] rate = {0.9,0.45,0.6};
+        if(Math.random()<rate[0]){
             int x = abstractEnemy.getLocationX();
             int y = abstractEnemy.getLocationY();
             double r = Math.random();
-            if(r<0.45){
+            if(r<rate[1]){
                 propFactory = new BloodFactory();
                 res.add(propFactory.create(x,y));
-            }else if(r>0.5){
+            }else if(r>rate[2]){
                 propFactory = new FireFactory();
                 res.add(propFactory.create(x,y));
             }else{

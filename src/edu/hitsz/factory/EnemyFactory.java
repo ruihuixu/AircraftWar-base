@@ -1,6 +1,5 @@
 package edu.hitsz.factory;
 
-import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.AbstractEnemy;
 
 /**

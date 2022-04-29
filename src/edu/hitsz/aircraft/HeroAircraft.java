@@ -3,12 +3,10 @@ package edu.hitsz.aircraft;
 import edu.hitsz.application.ImageManager;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
-import edu.hitsz.bullet.HeroBullet;
 import strategy.ShootContext;
 import strategy.ShootStrategy;
 import strategy.StraightShoot;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**

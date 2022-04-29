@@ -2,12 +2,16 @@ package edu.hitsz.application;
 
 import dao.Record;
 import dao.RecordDaoImpl;
-import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
-import edu.hitsz.basic.AbstractFlyingObject;
-import edu.hitsz.factory.*;
-import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import edu.hitsz.prop.AbstractProp;
+import edu.hitsz.aircraft.HeroAircraft;
+import edu.hitsz.basic.AbstractFlyingObject;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import edu.hitsz.aircraft.AbstractEnemy;
+import edu.hitsz.factory.BossFactory;
+import edu.hitsz.factory.EliteFactory;
+import edu.hitsz.factory.EnemyFactory;
+import edu.hitsz.factory.MobFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,6 +71,9 @@ public class Game extends JPanel {
      */
     private EnemyFactory enemyFactory;
 
+    MusicThread backgroundMusic;
+    MusicThread bossMusic;
+
     public Game() {
         heroAircraft = HeroAircraft.getInstance();
         enemyAircrafts = new LinkedList<>();
@@ -80,6 +87,7 @@ public class Game extends JPanel {
          */
         this.executorService = new ScheduledThreadPoolExecutor(1,
                 new BasicThreadFactory.Builder().namingPattern("game-action-%d").daemon(true).build());
+        //executorService = new ScheduledThreadPoolExecutor(1);
 
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
@@ -90,6 +98,12 @@ public class Game extends JPanel {
      * 游戏启动入口，执行游戏逻辑
      */
     public void action() {
+
+        if(Main.soundEffect){
+            backgroundMusic = new MusicThread("src/videos/bgm_boss.wav");
+            backgroundMusic.setLoop(true);
+            backgroundMusic.start();
+        }
 
         // 定时任务：绘制、对象产生、碰撞判定、击毁及结束判定
         Runnable task = () -> {
@@ -103,6 +117,10 @@ public class Game extends JPanel {
                 if(score!=0&&score%limit==0&&!bossFlag){
                     enemyFactory = new BossFactory();
                     enemyAircrafts.add(enemyFactory.create());
+                    if(Main.soundEffect){
+                        bossMusic = new MusicThread("src/videos/bgm_boss.wav");
+                        bossMusic.start();
+                    }
                     bossFlag = true;
                 }
                 if (enemyAircrafts.size()< enemyMaxNumber) {
@@ -142,15 +160,23 @@ public class Game extends JPanel {
                 // 游戏结束
                 executorService.shutdown();
                 gameOverFlag = true;
+                if(Main.soundEffect){
+                    new MusicThread("src/videos/game_over.wav").start();
+                    backgroundMusic.interrupt();
+                    if(bossFlag){
+                        bossMusic.interrupt();
+                    }
+                }
                 //打印排行榜
                 try {
                     paintScoreRank();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
                 System.out.println("Game Over!");
+                synchronized (Main.OBJECT){
+                    Main.OBJECT.notify();
+                }
             }
 
         };
@@ -242,12 +268,19 @@ public class Game extends JPanel {
                     // 敌机损失一定生命值
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
+                    if(Main.soundEffect){
+                        new MusicThread("src/videos/bullet_hit.wav").start();
+                    }
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
                         score += 10;
                         props.addAll(enemyAircraft.addProp(enemyAircraft));
                         if(enemyAircraft.getKind()==3){
+                            //boss机存在状态修改为不存在
                             bossFlag = false;
+                            if(Main.soundEffect){
+                                bossMusic.interrupt();
+                            }
                         }
                     }
                 }
@@ -266,6 +299,9 @@ public class Game extends JPanel {
             }
             if(heroAircraft.crash(temp)){
                 temp.vanish();
+                if(Main.soundEffect){
+                    new MusicThread("src/videos/get_supply.wav").start();
+                }
                 temp.work(heroAircraft);
             }
         }
@@ -299,11 +335,15 @@ public class Game extends JPanel {
      */
     @Override
     public void paint(Graphics g) {
+        Map<Main.GameMode,BufferedImage> backgroundImage = new EnumMap<>(Main.GameMode.class);
+        backgroundImage.put(Main.GameMode.EASY,ImageManager.BACKGROUND_IMAGE_EASY);
+        backgroundImage.put(Main.GameMode.NORMAL,ImageManager.BACKGROUND_IMAGE_NORMAL);
+        backgroundImage.put(Main.GameMode.HARD,ImageManager.BACKGROUND_IMAGE_HARD);
         super.paint(g);
 
         // 绘制背景,图片滚动
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, null);
+        g.drawImage(backgroundImage.get(Main.gameMode), 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
+        g.drawImage(backgroundImage.get(Main.gameMode), 0, this.backGroundTop, null);
         this.backGroundTop += 1;
         if (this.backGroundTop == Main.WINDOW_HEIGHT) {
             this.backGroundTop = 0;
@@ -357,10 +397,18 @@ public class Game extends JPanel {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd :hh:mm:ss");
         Record record = new Record(dateFormat.format(date),this.score);
+        //玩家记录自己的游戏名
+        String userName = JOptionPane.showInputDialog("游戏结束，你的得分为" + score + ",\n请输入名字记录得分:");
+        if(userName != null){
+            if("".equals(userName)){
+                userName = "testUserName";
+            }
+            record.setName(userName);
+        }
         recordDao.read();
         recordDao.doAdd(record);
-        recordDao.store();
         recordDao.ranking();
+        recordDao.store();
         String recordName;
         String recordTime;
         int recordScore;
@@ -375,5 +423,4 @@ public class Game extends JPanel {
             System.out.println("第"+j+"名"+": "+recordName+"，"+recordScore+"，"+recordTime);
         }
     }
-
 }

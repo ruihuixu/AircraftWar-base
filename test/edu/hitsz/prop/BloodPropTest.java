@@ -1,6 +1,5 @@
 package edu.hitsz.prop;
 
-import edu.hitsz.aircraft.HeroAircraft;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
