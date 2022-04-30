@@ -64,7 +64,7 @@ public class Game extends JPanel {
      */
     Random ran = new Random();
     private boolean bossFlag = false;
-    private int limit = 50;
+    private int limit = 100;
 
     /**
      * 建立工厂
@@ -87,7 +87,6 @@ public class Game extends JPanel {
          */
         this.executorService = new ScheduledThreadPoolExecutor(1,
                 new BasicThreadFactory.Builder().namingPattern("game-action-%d").daemon(true).build());
-        //executorService = new ScheduledThreadPoolExecutor(1);
 
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
@@ -100,7 +99,7 @@ public class Game extends JPanel {
     public void action() {
 
         if(Main.soundEffect){
-            backgroundMusic = new MusicThread("src/videos/bgm_boss.wav");
+            backgroundMusic = new MusicThread("src/videos/bgm.wav");
             backgroundMusic.setLoop(true);
             backgroundMusic.start();
         }
@@ -114,11 +113,14 @@ public class Game extends JPanel {
             if (timeCountAndNewCycleJudge()) {
                 System.out.println(time);
                 // 新敌机产生
+                //若无boss机存在，boss敌机会每得100分产生一架
                 if(score!=0&&score%limit==0&&!bossFlag){
                     enemyFactory = new BossFactory();
                     enemyAircrafts.add(enemyFactory.create());
                     if(Main.soundEffect){
                         bossMusic = new MusicThread("src/videos/bgm_boss.wav");
+                        bossMusic.setLoop(true);
+                        backgroundMusic.setEnd(true);
                         bossMusic.start();
                     }
                     bossFlag = true;
@@ -161,13 +163,13 @@ public class Game extends JPanel {
                 executorService.shutdown();
                 gameOverFlag = true;
                 if(Main.soundEffect){
-                    new MusicThread("src/videos/game_over.wav").start();
-                    backgroundMusic.interrupt();
+                    backgroundMusic.setEnd(true);
                     if(bossFlag){
-                        bossMusic.interrupt();
+                        bossMusic.setEnd(true);
                     }
+                    new MusicThread("src/videos/game_over.wav").start();
                 }
-                //打印排行榜
+                //控制台打印排行榜
                 try {
                     paintScoreRank();
                 } catch (IOException | ClassNotFoundException e) {
@@ -279,7 +281,10 @@ public class Game extends JPanel {
                             //boss机存在状态修改为不存在
                             bossFlag = false;
                             if(Main.soundEffect){
-                                bossMusic.interrupt();
+                                bossMusic.setEnd(true);
+                                backgroundMusic = new MusicThread("src/videos/bgm.wav");
+                                backgroundMusic.setLoop(true);
+                                backgroundMusic.start();
                             }
                         }
                     }
@@ -330,7 +335,6 @@ public class Game extends JPanel {
     /**
      * 重写paint方法
      * 通过重复调用paint方法，实现游戏动画
-     *
      * @param  g
      */
     @Override

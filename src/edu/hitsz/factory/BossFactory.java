@@ -12,7 +12,7 @@ public class BossFactory implements EnemyFactory{
         return new BossEnemy(
                 Main.WINDOW_WIDTH / 2,
                 (int) (Math.random()*Main.WINDOW_HEIGHT*0.2),
-                0,
+                5,
                 0,
                 150);
     }

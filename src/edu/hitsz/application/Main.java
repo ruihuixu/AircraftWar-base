@@ -18,7 +18,6 @@ public class Main {
     public static final int WINDOW_WIDTH = 512;
     public static final int WINDOW_HEIGHT = 768;
     public static boolean soundEffect;
-    public static GameMode gameMode;
     /**
      * 枚举定义游戏难度模式
      */
@@ -26,10 +25,11 @@ public class Main {
         //简单、普通、困难3种模式
         EASY,NORMAL,HARD
     }
+    public static GameMode gameMode;
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         System.out.println("Hello Aircraft War");
-
         // 获得屏幕的分辨率，初始化 Frame
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         JFrame frame = new JFrame("Aircraft War");
@@ -40,6 +40,7 @@ public class Main {
         frame.setBounds(((int) screenSize.getWidth() - WINDOW_WIDTH) / 2, 0,
                 WINDOW_WIDTH, WINDOW_HEIGHT);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         //启动界面
         mainPanel = new Startup().getMainPanel();
         frame.setContentPane(mainPanel);
@@ -52,7 +53,9 @@ public class Main {
             }
         }
         frame.remove(mainPanel);
+
         //游戏界面
+        System.out.println("是否开启了音效："+soundEffect);
         Game game = new Game();
         frame.setContentPane(game);
         frame.setVisible(true);
@@ -65,6 +68,7 @@ public class Main {
             }
         }
         frame.remove(game);
+
         //排行榜界面
         Ranking ranking = new Ranking();
         mainPanel = ranking.getMainPanel();

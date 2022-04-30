@@ -28,12 +28,14 @@ public class MusicThread extends Thread {
     private AudioFormat audioFormat;
     private byte[] samples;
     private boolean isLoop;
+    private boolean isEnd;
 
     public MusicThread(String filename) {
         //初始化filename
         this.filename = filename;
-        isLoop = false;
+        this.isLoop = false;
         reverseMusic();
+        this.isEnd = false;
     }
     /**
      * 设置是否为循环播放
@@ -42,6 +44,12 @@ public class MusicThread extends Thread {
     public void setLoop(boolean state){
         isLoop = state;
     }
+
+    /**
+     * 设置是否停止播放
+     * @param end
+     */
+    public void setEnd(boolean end){isEnd = end;}
 
     public void reverseMusic() {
         try {
@@ -97,6 +105,9 @@ public class MusicThread extends Thread {
                 if (numBytesRead != -1) {
                     dataLine.write(buffer, 0, numBytesRead);
                 }
+                if(isEnd){
+                    numBytesRead = -1;
+                }
             }
 
         } catch (IOException ex) {
@@ -110,11 +121,10 @@ public class MusicThread extends Thread {
 
     @Override
     public void run() {
-
         do{
             InputStream stream = new ByteArrayInputStream(samples);
             play(stream);
-        }while(isLoop);
+        }while(isLoop&&!isEnd);
     }
 }
 
