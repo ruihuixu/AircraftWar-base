@@ -1,0 +1,29 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Game
+
+abstract class Observer{
+     + response():void
+}
+
+Game ..> BombProp
+BombProp o--> Observer
+Observer <|-- MobEnemy
+Observer <|-- EliteEnemy
+
+class BombProp{
+     - observers:ArrayList
+     + attach(Observer observers):void
+     + detach(Observer observers):void
+     + notifyObserver():void
+}
+
+class MobEnemy{
+     + response():void
+}
+
+class EliteEnemy{
+     + response():void
+}
+@enduml

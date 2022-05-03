@@ -18,9 +18,12 @@ public interface RecordDao {
      * @param record
      */
     void doAdd(Record record);
+
     /**
-     * 删除一条记录
-     * @param i 行序号
+     * 删除一项记录
+     * @param i row行号
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     void doDelete(int i) throws IOException, ClassNotFoundException;
     /**

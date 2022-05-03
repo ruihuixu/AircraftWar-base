@@ -1,5 +1,9 @@
 package edu.hitsz.application;
 
+import edu.hitsz.application.game.EasyGame;
+import edu.hitsz.application.game.Game;
+import edu.hitsz.application.game.HardGame;
+import edu.hitsz.application.game.NormalGame;
 import swing.Ranking;
 import swing.Startup;
 
@@ -56,7 +60,20 @@ public class Main {
 
         //游戏界面
         System.out.println("是否开启了音效："+soundEffect);
-        Game game = new Game();
+        Game game;
+        switch (gameMode){
+            case EASY:
+                game = new EasyGame();
+                break;
+            case NORMAL:
+                game = new NormalGame();
+                break;
+            case HARD:
+                game = new HardGame();
+                break;
+            default:
+                game = null;
+        }
         frame.setContentPane(game);
         frame.setVisible(true);
         game.action();

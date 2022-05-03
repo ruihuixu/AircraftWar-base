@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author xu
  */
-public class EliteEnemy extends AbstractEnemy {
+public class EliteEnemy extends AbstractEnemy implements Observer{
     /**
      * kind标志飞机种类
      * @return 数字0、1、2、3分别标志英雄机、普通敌机、精英敌机、boss敌机
@@ -27,6 +27,11 @@ public class EliteEnemy extends AbstractEnemy {
         this.shootNum = 1;
         this.power = 10;
         this.direction = 1;
+    }
+
+    @Override
+    public void response() {
+        vanish();
     }
 
     @Override

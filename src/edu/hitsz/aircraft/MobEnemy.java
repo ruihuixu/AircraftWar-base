@@ -13,11 +13,16 @@ import java.util.List;
  *
  * @author hitsz
  */
-public class MobEnemy extends AbstractEnemy {
+public class MobEnemy extends AbstractEnemy implements Observer{
 
     public MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
         this.kind = 1;
+    }
+
+    @Override
+    public void response() {
+        vanish();
     }
 
     @Override
