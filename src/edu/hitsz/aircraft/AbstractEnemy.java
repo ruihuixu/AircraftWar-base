@@ -13,6 +13,11 @@ public abstract class AbstractEnemy extends AbstractAircraft{
     }
 
     /**
+     * 被击落后英雄机会获得的分数
+     */
+    protected int score;
+    public int getScore(){return score;}
+    /**
      * 生成道具
      * @param abstractEnemy 敌机
      * @return 精英机生成道具，其余可空返回

@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Main
+
+abstract class Game{
+   - bossNumber
+   # bossNeeded:boolean
+   # enemyMaxNumber:int
+   # eliteChance:double
+   # bossLimit:int
+   # hpAdded:int
+   # {abstract} initialise():void
+   # {abstract} getHpAdded(int bossNumber):int
+}
+
+Game <|-- EasyGame
+Game <|-- NormalGame
+Game <|-- HardGame
+Main ..> Game
+
+class EasyGame{
+    # initialise():void
+    # getHpAdded(int bossNumber):int
+}
+
+class NormalGame{
+    # initialise():void
+    # getHpAdded(int bossNumber):int
+}
+
+class HardGame{
+    # initialise():void
+    # getHpAdded(int bossNumber):int
+}
+
+@enduml

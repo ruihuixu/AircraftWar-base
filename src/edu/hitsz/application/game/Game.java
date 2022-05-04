@@ -55,12 +55,16 @@ public abstract class Game extends JPanel {
     /**
      * 不同难度下不同的定义项
      * bossNeeded指示是否生成boss机；enemyMaxNumber为敌机同时出现的最大数量；eliteChance表示精英机生成的概率;
-     * bossLimit为boss机每次生成的得分阈值；
+     * bossLimit为boss机每次生成的得分阈值；hpAdded为敌机逐渐增加的血量;difficulty为难度系数（初始值为1）
+     * 周期（ms)，指示子弹的发射、敌机的产生频率
      */
     protected int enemyMaxNumber;
     protected boolean bossNeeded;
     protected double eliteChance;
     protected int bossLimit;
+    protected int hpAdded;
+    protected double difficulty = 1;
+    protected int cycleDuration;
 
     private boolean gameOverFlag = false;
     private int score = 0;
@@ -69,13 +73,12 @@ public abstract class Game extends JPanel {
      * 周期（ms)
      * 指示子弹的发射、敌机的产生频率
      */
-    private int cycleDuration = 300;
     private int cycleTime = 0;
     /**
-     * flag、limit指示Boss机产生；
+     * flag指示Boss机的存在，bossNumber指示目前已出现boss机数量；
      */
     private boolean bossFlag = false;
-
+    private int bossNumber = 0;
     /**
      * 建立工厂
      */
@@ -124,33 +127,37 @@ public abstract class Game extends JPanel {
 
             time += timeInterval;
 
+
             // 周期性执行（控制频率）
             if (timeCountAndNewCycleJudge()) {
                 System.out.println(time);
+                difficulty = getDifficulty(time);
                 // 新敌机产生
                 //若无boss机存在，boss敌机会每隔250分产生一架
-                if(bossNeeded&&score!=0&&score% bossLimit==0&&!bossFlag){
+                if(bossNeeded&&score!=0&&score%bossLimit==0&&!bossFlag){
+                    hpAdded = getHpAdded(bossNumber);
                     enemyFactory = new BossFactory();
-                    System.out.println("Boss is coming!");
-                    enemyAircrafts.add(enemyFactory.create());
+                    enemyAircrafts.add(enemyFactory.create(hpAdded));
+                    bossNumber ++;
+                    bossFlag = true;
                     if(Main.soundEffect){
                         bossMusic = new MusicThread("src/videos/bgm_boss.wav");
                         bossMusic.setLoop(true);
                         backgroundMusic.setEnd(true);
                         musicThreadPool.execute(bossMusic);
                     }
-                    bossFlag = true;
                 }
                 //精英机与普通机的生产
                 if (enemyAircrafts.size()< enemyMaxNumber) {
                     double ran1 = Math.random();
-                    if(ran1<eliteChance){
+                    hpAdded = (int) (difficulty*30-30);
+                    if(ran1<(eliteChance*difficulty)){
                         enemyFactory = new MobFactory();
-                        enemyAircrafts.add(enemyFactory.create());
+                        enemyAircrafts.add(enemyFactory.create(hpAdded));
 
                     }else{
                         enemyFactory = new EliteFactory();
-                        enemyAircrafts.add(enemyFactory.create());
+                        enemyAircrafts.add(enemyFactory.create(hpAdded));
                     }
                 }
                 // 飞机射出子弹
@@ -218,6 +225,18 @@ public abstract class Game extends JPanel {
      * 对不同难度下的一些值的不同进行初始化
      */
     protected abstract void initialise();
+    /**
+     * 得到boss机血量的递增量
+     * @param bossNumber 已出现的boss机架数
+     * @return hpAdded
+     */
+    protected abstract int getHpAdded(int bossNumber);
+    /**
+     * 得到难度系数随时间的改变值
+     * @param time
+     * @return difficulty
+     */
+    abstract double getDifficulty(int time);
 
     private boolean timeCountAndNewCycleJudge() {
         cycleTime += timeInterval;
@@ -299,7 +318,7 @@ public abstract class Game extends JPanel {
                     }
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
-                        score += 10;
+                        score += enemyAircraft.getScore();
                         props.addAll(enemyAircraft.addProp(enemyAircraft));
                         if(enemyAircraft.getKind()==3){
                             //boss机存在状态修改为不存在
@@ -336,6 +355,7 @@ public abstract class Game extends JPanel {
                     for(AbstractEnemy enemy:enemyAircrafts){
                         if (enemy.getKind() != 3) {
                             ((BombProp)temp).attach((Observer) enemy);
+                            score += enemy.getScore();
                         }
                     }
                     for(BaseBullet bullet:enemyBullets){

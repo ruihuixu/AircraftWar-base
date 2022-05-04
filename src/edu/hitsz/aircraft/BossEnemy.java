@@ -18,6 +18,7 @@ public class BossEnemy extends AbstractEnemy{
         this.power = 10;
         this.shootNum = 5;
         this.direction = 1;
+        this.score = 50;
     }
 
     @Override

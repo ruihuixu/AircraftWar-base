@@ -10,5 +10,5 @@ public interface EnemyFactory {
      * 抽象方法
      * @return 敌机
      */
-    AbstractEnemy create();
+    AbstractEnemy create(int hpAdded);
 }

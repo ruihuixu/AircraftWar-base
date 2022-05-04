@@ -8,12 +8,12 @@ import edu.hitsz.application.Main;
  */
 public class EliteFactory implements EnemyFactory{
     @Override
-    public EliteEnemy create(){
+    public EliteEnemy create(int hpAdded){
         return new EliteEnemy(
                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth()))*1,
                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
                 2,
                 5,
-                30);
+                (30+hpAdded));
     }
 }

@@ -27,6 +27,7 @@ public class EliteEnemy extends AbstractEnemy implements Observer{
         this.shootNum = 1;
         this.power = 10;
         this.direction = 1;
+        this.score = 20;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class EliteEnemy extends AbstractEnemy implements Observer{
     public List<AbstractProp> addProp(AbstractEnemy abstractEnemy) {
         List<AbstractProp> res = new LinkedList<>();
         PropFactory propFactory;
-        double[] rate = {0.9,0.45,0.6};
+        double[] rate = {0.6,0.45,0.6};
         if(Math.random()<rate[0]){
             int x = abstractEnemy.getLocationX();
             int y = abstractEnemy.getLocationY();
