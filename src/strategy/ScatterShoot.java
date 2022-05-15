@@ -18,7 +18,7 @@ public class ScatterShoot implements ShootStrategy{
         int x = aircraft.getLocationX();
         int y = aircraft.getLocationY() + aircraft.getDirection()*2;
         int speedY = aircraft.getSpeedY() + aircraft.getDirection()*5;
-        int shootNum = aircraft.getShootnum();
+        int shootNum = aircraft.getShootNum();
         int power = aircraft.getPower();
         BaseBullet baseBullet;
         for(int i=0;i<shootNum;i++){

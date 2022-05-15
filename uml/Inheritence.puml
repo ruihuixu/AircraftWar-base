@@ -1,10 +1,40 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class Game
+class Main
+
+abstract class Game{
+   - bossNumber
+   # bossNeeded:boolean
+   # enemyMaxNumber:int
+   # eliteChance:double
+   # bossLimit:int
+   # hpAdded:int
+   # {abstract} initialise():void
+   # {abstract} getHpAdded(int bossNumber):int
+   # {abstract} getDifficulty(int time):double
+}
+
+class EasyGame{
+    # initialise():void
+    # getHpAdded(int bossNumber):int
+    # getDifficulty(int time):double
+}
+
+class NormalGame{
+    # initialise():void
+    # getHpAdded(int bossNumber):int
+    # getDifficulty(int time):double
+}
+
+class HardGame{
+    # initialise():void
+    # getHpAdded(int bossNumber):int
+    # getDifficulty(int time):double
+}
 
 interface EnemyFactory {
-    + create():AbstractAircraft
+    + create(int hpAdded):AbstractEnemy
 }
 
 interface PropFactory {
@@ -39,11 +69,24 @@ abstract class AbstractAircraft
 {
 	# maxHp:int
     # hp:int
+    # shootNum:int
+    # power:int
     # kind:int
     + AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp):void
     + decreaseHp(int decrease):void
+    + increaseHp(int increase):void
     + getHp():int
+    + getShootNum():int
+    + getPower():int
+    + getKind():int
     + {abstract} shoot():List<BaseBullet>
+}
+abstract class AbstractEnemy
+{
+	# score:int
+	+ getScore():int
+	+ AbstractEnemy(int locationX, int locationY, int speedX, int speedY, int hp):void
+	+ {abstract}addProp(AbstractEnemy abstractEnemy):List<AbstractProp>
 }
 
 class BaseBullet
@@ -61,10 +104,39 @@ abstract class AbstractProp
     + getPropkind():int
 }
 
+interface ShootStrategy {
+   + fireWay(AbstractAircraft aircraft):List<BaseBullet>
+}
+
+class ShootContext{
+    - strategy:ShootStrategy
+    + ShootContext(ShootStrategy strategy):void
+    + setStrategy(ShootStrategy strategy):void
+    + executeStrategy(AbstractAircraft aircraft):List<BaseBullet>
+}
+ShootContext <.. HeroAircraft
+ShootContext <.. BossEnemy
+ShootContext  o--> ShootStrategy
+ShootContext <.. EliteEnemy
+ShootStrategy  <|.. ScatterShoot
+ShootStrategy <|.. StraightShoot
+
+class ScatterShoot {
+   + fireWay(AbstractAircraft aircraft):List<BaseBullet>
+}
+
+class StraightShoot {
+   + fireWay(AbstractAircraft aircraft):List<BaseBullet>
+}
+
 Game ..> EnemyFactory
 Game ..> PropFactory
 Game ..> AbstractAircraft
 Game ..> AbstractProp
+Game <|-- EasyGame
+Game <|-- NormalGame
+Game <|-- HardGame
+Main ..> Game
 
 EnemyFactory <.. EliteFactory
 EnemyFactory <.. MobFactory
@@ -85,9 +157,10 @@ AbstractFlyingObject <|-- BaseBullet
 AbstractFlyingObject <|-- AbstractProp
 
 AbstractAircraft <|-- HeroAircraft
-AbstractAircraft <|-- MobEnemy
-AbstractAircraft <|-- EliteEnemy
-AbstractAircraft <|-- BossEnemy
+AbstractAircraft <|-- AbstractEnemy
+MobEnemy --|> AbstractEnemy
+EliteEnemy --|> AbstractEnemy
+BossEnemy --|> AbstractEnemy
 
 BaseBullet <|-- HeroBullet
 BaseBullet <|-- EnemyBullet
@@ -95,6 +168,38 @@ BaseBullet <|-- EnemyBullet
 AbstractProp <|-- FireProp
 AbstractProp <|-- BloodProp
 AbstractProp <|-- BombProp
+
+interface RecordDao {
+     + doAdd(Record record):void
+     + getAllRecords():List<Record>
+     + ranking():void
+}
+
+RecordDao <. Game
+RecordDao <|.. RecordDaoImpl
+Record <- RecordDaoImpl
+
+class RecordDaoImpl {
+      - records:List<Record>
+      + doAdd(Record record):void
+      + getAllRecords():List<Record>
+      + ranking():void
+      + store():void
+      + read():void
+}
+
+class Record{
+      - name:String
+      - score:int
+      - time:String
+      + Record(String time,int score):void
+      + getScore():int
+      + getName():String
+      + getTime():String
+      + setName(String name):void
+      + setTime(String time):void
+      + setScore(int score):void
+}
 
 class EliteFactory {
     + create():EliteEnemy
@@ -122,6 +227,7 @@ class BombFactory {
 
 class HeroAircraft {
      - {static} heroAircraft:HeroAircraft
+     - strategy:ShootStrategy
      - shootNum:int
      - power:int
      - direction:int
@@ -130,6 +236,7 @@ class HeroAircraft {
      - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp):void
      + forward():void
      + shoot():List<BaseBullet>
+     + setStrategy(ShootStrategy strategy):void
 }
 
 class MobEnemy {

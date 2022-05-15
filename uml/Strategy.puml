@@ -13,7 +13,7 @@ class ShootContext{
 }
 
 ShootContext  o--> ShootStrategy
-ShootStrategy <|.. ScatterShoot
+ShootStrategy  <|.. ScatterShoot
 ShootStrategy <|.. StraightShoot
 
 class ScatterShoot {

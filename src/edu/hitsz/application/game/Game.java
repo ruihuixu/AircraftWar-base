@@ -115,7 +115,7 @@ public abstract class Game extends JPanel {
     public void action() {
 
         if(Main.soundEffect){
-            backgroundMusic = new MusicThread("src/videos/bgm.wav");
+            backgroundMusic = new MusicThread("src/videos/The Chaos.wav");
             backgroundMusic.setLoop(true);
             musicThreadPool.execute(backgroundMusic);
         }
@@ -152,11 +152,10 @@ public abstract class Game extends JPanel {
                     double ran1 = Math.random();
                     hpAdded = (int) (difficulty*30-30);
                     if(ran1<(eliteChance*difficulty)){
-                        enemyFactory = new MobFactory();
-                        enemyAircrafts.add(enemyFactory.create(hpAdded));
-
-                    }else{
                         enemyFactory = new EliteFactory();
+                        enemyAircrafts.add(enemyFactory.create(hpAdded));
+                    }else{
+                        enemyFactory = new MobFactory();
                         enemyAircrafts.add(enemyFactory.create(hpAdded));
                     }
                 }
@@ -236,7 +235,7 @@ public abstract class Game extends JPanel {
      * @param time
      * @return difficulty
      */
-    abstract double getDifficulty(int time);
+    protected abstract double getDifficulty(int time);
 
     private boolean timeCountAndNewCycleJudge() {
         cycleTime += timeInterval;
@@ -325,7 +324,7 @@ public abstract class Game extends JPanel {
                             bossFlag = false;
                             if(Main.soundEffect){
                                 bossMusic.setEnd(true);
-                                backgroundMusic = new MusicThread("src/videos/bgm.wav");
+                                backgroundMusic = new MusicThread("src/videos/The Chaos.wav");
                                 backgroundMusic.setLoop(true);
                                 musicThreadPool.execute(backgroundMusic);
                             }

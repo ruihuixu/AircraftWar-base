@@ -12,6 +12,7 @@ abstract class Game{
    # hpAdded:int
    # {abstract} initialise():void
    # {abstract} getHpAdded(int bossNumber):int
+   # {abstract} getDifficulty(int time):double
 }
 
 Game <|-- EasyGame
@@ -22,16 +23,19 @@ Main ..> Game
 class EasyGame{
     # initialise():void
     # getHpAdded(int bossNumber):int
+    # getDifficulty(int time):double
 }
 
 class NormalGame{
     # initialise():void
     # getHpAdded(int bossNumber):int
+    # getDifficulty(int time):double
 }
 
 class HardGame{
     # initialise():void
     # getHpAdded(int bossNumber):int
+    # getDifficulty(int time):double
 }
 
 @enduml

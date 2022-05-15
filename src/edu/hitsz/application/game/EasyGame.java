@@ -19,7 +19,7 @@ public class EasyGame extends Game{
     }
 
     @Override
-    double getDifficulty(int time) {
+    protected double getDifficulty(int time) {
         return 1;
     }
 }
